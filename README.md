@@ -1,29 +1,61 @@
 # Research Atlas
 
-A redesigned university research opportunity workspace with a Flask REST API, MySQL persistence and a responsive HTML/CSS/JavaScript interface.
+A university research opportunity workspace with a Flask REST API, MySQL persistence and a responsive HTML/CSS/JavaScript interface. Faculty members can post, view, update, close and delete research opportunities in one place.
 
-Prepared for: **Shayan Ali — 24P-0573**. Course context: Computer Networks, CS-5B, Fall 2026.
+Prepared for: **Shayan Ali — 24P-0573**. Course: Computer Networks, CS-5B, Fall 2026 (Assignment 1).
+
+## Submission links
+
+- **GitHub repository:** https://github.com/shayanali005/research-opportunity-portal
+- **Demonstration video (about one minute):** https://github.com/shayanali005/research-opportunity-portal/raw/refs/heads/main/assignment-1-cn_cjrlhJmE.webm (the video file is also included in the submission ZIP)
 
 ## Provenance
 
 This is an AI-assisted redesign of the Research Opportunity Portal supplied by Sohrab (24P-0604). Field definitions and input validation are adapted from that project. The interface, API application structure, persistence module, collection and documentation were rewritten for this version. This statement identifies the actual sources of the work; the recipient line above is not a claim of sole authorship. Review and understand the code and follow your instructor's rules on reused work and AI assistance.
 
-## What changed
+## Features
 
-- Forest-green sidebar, light dashboard, live statistics and opportunity cards replace the original table layout.
-- Search, status filters, deadline/title/newest sorting, modal editor and detail view.
-- Separate application factory, validation and transactional storage modules.
-- Parameterized MySQL queries, row locking during updates, rollback on failures and consistent JSON errors.
-- Standalone Postman collection with response assertions and automatically captured record ID.
-- No database credentials, private database files, old virtual environments or old test reports are included.
+- Create, list, view, update and delete research opportunities, all stored in MySQL.
+- Close or reopen an opportunity (status Open / Closed).
+- Search, status filter and sorting (deadline, title, newest) in the browser.
+- Success and error messages, plus required-field validation in the form and on the server.
+- Parameterized SQL queries, row locking during updates, rollback on failures and consistent JSON errors.
+- Postman collection with response checks, including a 404 and a 400 validation case.
 
 ## Prerequisites
 
-Python 3.11 or later, MySQL 8.0.16 or later, and Postman for the required API demonstration. Internet access is needed once to install the Python dependencies. The frontend uses no CDN, fonts or JavaScript dependencies.
+Python 3.11 or later, MySQL 8.0.16 or later, and Postman for the API demonstration. Internet access is needed once to install the Python dependencies. The frontend uses no CDN, fonts or JavaScript dependencies.
+
+## Setup on Linux (Ubuntu) / macOS
+
+Open a terminal in the `research-atlas` directory:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
+Create the database and a local application user (replace the sample password with your own):
+
+```bash
+sudo mysql < database/schema.sql
+sudo mysql -e "CREATE USER 'atlas_app'@'localhost' IDENTIFIED BY 'CHOOSE_A_PRIVATE_PASSWORD'; GRANT SELECT, INSERT, UPDATE, DELETE ON research_atlas.* TO 'atlas_app'@'localhost';"
+```
+
+If your MySQL root account uses a password, use `mysql -u root -p` instead of `sudo mysql`.
+
+Open `.env` and set `DB_PASSWORD` to the same password. Do not commit `.env`. Then start the server:
+
+```bash
+.venv/bin/python run.py
+```
+
+Open **http://127.0.0.1:5050** and keep the terminal open. Always run the app with `.venv/bin/python` (not the system `python3`) so the installed packages are found. The frontend must be opened through this server, not by double-clicking its HTML file.
 
 ## Setup on Windows
 
-Open a terminal in the extracted `research-atlas` directory:
+Open a terminal in the `research-atlas` directory:
 
 ```powershell
 py -m venv .venv
@@ -31,29 +63,27 @@ py -m venv .venv
 Copy-Item .env.example .env
 ```
 
-Open MySQL Workbench with an administrator connection, open `database/schema.sql`, and execute it. Alternatively, use the MySQL command-line client:
+Open MySQL Workbench with an administrator connection, open `database/schema.sql` and execute it. Alternatively, use the MySQL command-line client:
 
 ```text
 mysql -u root -p
 SOURCE C:/full/path/to/research-atlas/database/schema.sql;
 ```
 
-Create a local application user in the MySQL client. Replace the sample password before executing:
+Create a local application user in the MySQL client (replace the sample password):
 
 ```sql
 CREATE USER 'atlas_app'@'localhost' IDENTIFIED BY 'CHOOSE_A_PRIVATE_PASSWORD';
 GRANT SELECT, INSERT, UPDATE, DELETE ON research_atlas.* TO 'atlas_app'@'localhost';
 ```
 
-Edit `.env` with that password and your actual MySQL host and port. Do not commit `.env`.
+Edit `.env` with that password and your actual MySQL host and port, then start the server:
 
 ```powershell
 .\.venv\Scripts\python.exe run.py
 ```
 
-Open **http://127.0.0.1:5050**. Keep the terminal open. Start with an empty database and use **New opportunity** to add a call. The frontend must be opened through this server, not by double-clicking its HTML file.
-
-For macOS/Linux, use `python3 -m venv .venv`, `.venv/bin/python -m pip install -r requirements.txt`, `cp .env.example .env`, then `.venv/bin/python run.py`.
+Open **http://127.0.0.1:5050**.
 
 ## API
 
@@ -69,9 +99,17 @@ List supports optional `q` and `status=Open` or `status=Closed`. Successful reco
 
 Required fields: `research_title`, `research_description`, `research_area`, `faculty_name`, `department`, `required_skills`, `available_positions`, `application_deadline`. Status defaults to Open. Positions must be a positive integer. Dates must be real dates in YYYY-MM-DD format. Blank strings are rejected.
 
-## Postman demonstration
+## Postman testing
 
-Import `postman/Research-Atlas.postman_collection.json` and run its requests in order. `base_url` defaults to port 5050. The collection creates three records, retrieves them, updates/closes/deletes the first, verifies its 404 and sends invalid data to verify 400. It leaves the other two records for review. Repeat runs create more records; use a disposable database for testing. The collection contains test definitions; importing it does not mean the tests have been run in Postman.
+Import `postman/Research-Atlas.postman_collection.json` into Postman, start the server, then run the collection in order. `base_url` defaults to port 5050. The collection:
+
+1. creates three opportunities,
+2. retrieves all of them and one by ID,
+3. updates the first, closes it, then deletes it,
+4. requests the deleted record again (404 Not Found),
+5. sends one request with missing fields (400 validation error).
+
+It leaves the other two records in the database. Repeat runs create more records, so use a disposable database for testing.
 
 ## Project structure
 
@@ -81,26 +119,18 @@ server/__init__.py     REST routes and application configuration
 server/storage.py      MySQL queries and transactions
 server/validation.py   Field validation
 web/                   Browser UI
-database/schema.sql    Empty database and table setup
+database/schema.sql    Database and table setup
 postman/               Importable API collection
 docs/                  Verification and demonstration guidance
 ```
 
-## Remaining submission items
+## Troubleshooting
 
-**GitHub repository link:https://github.com/shayanali005/research-opportunity-portal.** Create your own repository, make meaningful commits as you review and develop the work, and replace this line with its real URL. Do not fabricate a development history.
+This is a local coursework application without authentication, so it should not be exposed publicly.
 
-**Demonstration video/link: NOT PROVIDED.** Record your own demonstration (maximum one minute); see `docs/DEMO.md`. A written guide is included, not a recording.
+- **Database unavailable:** make sure MySQL is running, the schema has been executed and the `.env` credentials and port are correct.
+- **Port already in use:** stop the old server or set `PORT` in `.env`, and change Postman's `base_url` to match.
+- **Empty dashboard:** normal on first use; add records with the form or Postman.
+- **`ModuleNotFoundError`:** install the requirements and run the app with the same virtual-environment Python (`.venv/bin/python`).
 
-The assignment's filename pattern is `P24_0000_NAME_CLASS.zip`; confirm the class and filename convention with your instructor. The supplied archive uses a descriptive project name because the GitHub/video deliverables are still outstanding.
-
-## Scope and troubleshooting
-
-This is a local coursework application without authentication; any user who can reach it can manage its records. The development server binds to loopback. Do not expose it publicly as a faculty system without adding authentication and production hosting.
-
-- Database unavailable: ensure MySQL is running, execute the schema and verify `.env` credentials/port.
-- Port already in use: set `PORT` in `.env` and change Postman's `base_url` to match.
-- Empty dashboard: normal on first use; add records with the form or Postman.
-- A dependency error: install requirements using the same virtual-environment Python used to run the app.
-
-See `docs/VERIFICATION.md` for the checks actually performed on this package.
+See `docs/VERIFICATION.md` for the checks performed on this package.
