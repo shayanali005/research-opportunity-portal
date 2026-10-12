@@ -88,7 +88,7 @@ docs/                  Verification and demonstration guidance
 
 ## Remaining submission items
 
-**GitHub repository link: NOT PROVIDED.** Create your own repository, make meaningful commits as you review and develop the work, and replace this line with its real URL. Do not fabricate a development history.
+**GitHub repository link:https://github.com/shayanali005/research-opportunity-portal.** Create your own repository, make meaningful commits as you review and develop the work, and replace this line with its real URL. Do not fabricate a development history.
 
 **Demonstration video/link: NOT PROVIDED.** Record your own demonstration (maximum one minute); see `docs/DEMO.md`. A written guide is included, not a recording.
 
