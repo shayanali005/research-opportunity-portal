@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Atlas | Opportunity Workspace</title><link rel="stylesheet" href="/atlas.css">
+  <script src="/atlas.js" defer></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a href="/" class="brand"><span class="brand-icon">ra.</span><span>Research<br><b>Atlas</b></span></a>
+  <p class="eyebrow">FACULTY WORKSPACE</p>
+  <button class="nav active" data-filter="">◈ &nbsp; All opportunities</button>
+  <button class="nav" data-filter="Open">↗ &nbsp; Open calls</button>
+  <button class="nav" data-filter="Closed">▣ &nbsp; Closed archive</button>
+  <div class="sidebar-note"><span class="note-icon">✳</span><h3>Ideas need people.</h3><p>Connect your next research question with curious minds.</p><button id="sideCreate">Publish a call ↗</button></div>
+  <footer>University research portal<br><span>Computer Networks · Fall 2026</span></footer>
+</aside>
+<main>
+  <header class="topline"><span>Workspace <span class="slash">/</span> Opportunities</span><span class="workspace-tag">Faculty dashboard</span></header>
+  <section class="heading"><div><p class="eyebrow">EXPLORE. CONNECT. DISCOVER.</p><h1>A home for the<br>next big question<span>.</span></h1><p class="intro">Discover research openings and bring your next project to life.</p></div><button class="primary" id="create">+ New opportunity</button></section>
+  <section class="stats" aria-label="Opportunity statistics"><div><span>Total opportunities</span><strong id="total">—</strong><small>Across your workspace</small></div><div><span>Open opportunities</span><strong id="openCount">—</strong><small>Currently accepting interest</small></div><div><span>Available positions</span><strong id="positions">—</strong><small>Across open opportunities</small></div></section>
+  <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+  <section class="board"><div class="board-heading"><h2 id="boardTitle">All opportunities</h2><button class="quiet" id="refresh">↻ Refresh</button></div><div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search title, area, faculty or department" aria-label="Search opportunities"></label><label class="select-label">Status<select id="statusFilter"><option value="">All statuses</option><option>Open</option><option>Closed</option></select></label><label class="select-label">Sort<select id="sort"><option value="deadline">Deadline first</option><option value="newest">Newest first</option><option value="title">Title A–Z</option></select></label></div><p id="resultCount" class="result-count" aria-live="polite">Loading opportunities…</p><div id="cards" class="cards"></div></section>
+  <footer class="main-footer">Research Atlas <span>A little curiosity goes a long way.</span></footer>
+</main>
+<dialog id="editor"><form id="opportunityForm"><div class="dialog-head"><div><p class="eyebrow">OPPORTUNITY EDITOR</p><h2 id="editorTitle">Publish a new call</h2></div><button type="button" class="icon-button" data-close="editor" aria-label="Close editor">×</button></div><p class="form-note">Give students the details they need. All fields are required.</p><input type="hidden" name="id"><div class="form-grid">
+<label class="full">Research title<input name="research_title" required maxlength="200" placeholder="A clear, specific title"></label>
+<label class="full">Research description<textarea name="research_description" required rows="4" placeholder="Describe the project, goals and student responsibilities"></textarea></label>
+<label>Research area<input name="research_area" required maxlength="100" placeholder="e.g. Computer networks"></label>
+<label>Faculty member<input name="faculty_name" required maxlength="100"></label>
+<label>Department<input name="department" required maxlength="100"></label>
+<label>Required skills<input name="required_skills" required maxlength="255" placeholder="e.g. Python, data analysis"></label>
+<label>Available positions<input name="available_positions" type="number" min="1" max="2147483647" step="1" required></label>
+<label>Application deadline<input name="application_deadline" type="date" min="1000-01-01" max="9999-12-31" required></label>
+<label>Status<select name="status" required><option>Open</option><option>Closed</option></select></label>
+</div><p id="formError" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="quiet" data-close="editor">Cancel</button><button type="submit" class="primary" id="save">Publish opportunity</button></div></form></dialog>
+<dialog id="details"><div class="dialog-head"><p class="eyebrow">RESEARCH OPPORTUNITY</p><button class="icon-button" data-close="details" aria-label="Close details">×</button></div><div id="detailContent"></div><div id="detailActions" class="dialog-actions"></div></dialog>
+<dialog id="confirmation"><h2>Delete this opportunity?</h2><p>This removes the record from the database. This action cannot be undone.</p><p id="deleteError" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button class="quiet" data-close="confirmation">Keep opportunity</button><button class="danger" id="confirmDelete">Delete opportunity</button></div></dialog>
+</body></html>
